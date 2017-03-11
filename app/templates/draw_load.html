@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="padding: 200px 300px 10px;">
+    <form class="bs-example bs-example-form" role="form" id ="searchForm">
+        <div class="input-group">
+            <input type="text" class="form-control" style='width:800px ;height:100px ' id = 'content' >
+            <button type="button" class="btn btn-default" id="btn_submit" style='width:200px ;height:100px '>点击</button>
+        </div>
+        <br>
+    </form>
+</div>
+<div id="main" style="width: 600px;height:400px;"></div>
+<script>
+
+
+$('#btn_submit').click(function(){
+
+   var content = document.getElementById("content").value;
+   alert(content)
+ var myChart = echarts.init(document.getElementById('main'));
+         // 显示标题，图例和空的坐标轴
+         myChart.setOption({
+             title: {
+                 text: '异步数据加载示例'
+             },
+             tooltip: {},
+             legend: {
+                 data:['销量']
+             },
+             xAxis: {
+                 data: []
+             },
+             yAxis: {},
+             series: [{
+                 name: '销量',
+                 type: 'bar',
+                 data: []
+             }]
+         });
+          myChart.showLoading();    //数据加载完之前先显示一段简单的loading动画
+
+         var names=[];    //类别数组（实际用来盛放X轴坐标值）
+         var nums=[];    //销量数组（实际用来盛放Y坐标值）
+          $.ajax({
+        type:"POST",
+        url:"/draw_Load",
+        contentType:"application/json;charset=utf-8",
+        dataType:"json",
+        data:JSON.stringify(content),
+        success:function(data){
+             //请求成功时执行该函数内容，result即为服务器返回的json对象
+             result = data['ok']
+             if (result) {
+                    for(var i=0;i<result[0].length;i++){
+                       names.push(result[0][i]);    //挨个取出类别并填入类别数组
+                     }
+                    for(var i=0;i<result[1].length;i++){
+                        nums.push(result[1][i]);    //挨个取出销量并填入销量数组
+                      }
+                    myChart.hideLoading();    //隐藏加载动画
+                    myChart.setOption({        //加载数据图表
+                        xAxis: {
+                            data: names
+                        },
+                        series: [{
+                            // 根据名字对应到相应的系列
+                            name: '销量',
+                            data: nums
+                        }]
+                    });
+
+             }
+
+        },
+         error : function(errorMsg) {
+             //请求失败时执行该函数
+         alert("图表请求数据失败!");
+         myChart.hideLoading();
+         }
+    })
+
+});
+
+
+</script>
+{% endblock %}

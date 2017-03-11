@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Hi, {{user.nickname}}!</h1>
+<div style="padding: 200px 300px 10px;">
+    <form class="bs-example bs-example-form" role="form" id ="searchForm">
+        <div class="input-group">
+            <input type="text" class="form-control" style='width:800px ;height:100px ' id = 'content' >
+            <button type="button" class="btn btn-default" id="btn_submit" style='width:200px ;height:100px '>点击</button>
+        </div>
+        <br>
+    </form>
+</div>
+<div id="main" style="width: 600px;height:400px;"></div>
+<script>
+
+$('#btn_submit').click(function(){
+
+   var content = document.getElementById("content").value;
+   alert(content)
+   url = "/drawBar/"+content
+   alert(url)
+   window.location.href=url
+
+});
+
+
+
+</script>
+{% endblock %}
